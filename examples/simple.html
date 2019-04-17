@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple example</title>
+</head>
+<style>
+    html {
+        box-sizing: border-box;
+    }
+    
+    *, *:before, *:after {
+        box-sizing: inherit;
+    }
+</style>
+<body>
+<button onclick="generate()">Generate pdf</button>
+
+<script src="libs/jspdf.debug.js"></script>
+<script src="libs/jspdf.plugin.autotable.js"></script>
+
+<table id="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Email</th>
+        <th>Country</th>
+        <th>IP-address</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>Donna</td>
+        <td>Moore</td>
+        <td>dmoore0@furl.net</td>
+        <td>China</td>
+        <td>211.56.242.221</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Janice</td>
+        <td>Henry</td>
+        <td>jhenry1@theatlantic.com</td>
+        <td>Ukraine</td>
+        <td>38.36.7.199</td>
+    </tr>
+    </tbody>
+</table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.js"></script>
+<script>
+
+function bodyRows(rowCount) {
+    rowCount = rowCount || 10;
+    let body = [];
+    for (var j = 1; j <= rowCount; j++) {
+        body.push({
+            id: j,
+            name: faker.name.findName(),
+            email: faker.internet.email(),
+            city: faker.address.city(),
+            expenses: faker.finance.amount(),
+        });
+    }
+    return body;
+}
+
+
+function headRows() {
+    return [{id: 'ID', name: 'Name', email: 'Email', city: 'City', expenses: 'Sum'},
+	{id: 'ID', name: 'Name', email: 'Email', city: 'City', expenses: 'Sum'}];
+}
+
+function footRows() {
+    return [{id: 'ID', name: 'Name', email: 'Email', city: 'City', expenses: 'Sum'}];
+}
+var faker = window.faker;
+
+var examples = {};
+    function generate() {var doc = new jsPDF('p', 'pt');
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.setFontStyle('bold');
+    doc.text('Rowspan and colspan', 40, 50);
+
+    let body = bodyRows(40);
+    for (var i = 0; i < 2; i++) {
+        var row = body[i];
+        if (i % 5 === 0) {
+            row['id'] = {rowSpan: 2, content: i / 5 + 1, styles: {valign: 'middle', halign: 'center'}};
+        }
+    }
+    let head = headRows();
+    head[0]['id'] = {content: 'People', colSpan: 5, styles: {halign: 'center', fillColor: [255, 255, 255],textColor: [78, 53, 73],lineWidth: 1}};
+	head[1]['email'] = {content: 'People22', colSpan: 3, styles: {halign: 'center', fillColor: [255, 255, 255],textColor: [78, 53, 73],lineWidth: 1}};
+	head[1]['id'] = {content: 'People32', colSpan: 2, styles: {halign: 'center', fillColor: [255, 255, 255],textColor: [78, 53, 73],lineWidth: 1}};
+
+    
+    doc.autoTable({
+        startY: 60,
+        head: head,
+        body: body,
+        theme: 'grid'
+    });
+
+        doc.output("dataurlnewwindow");
+    }
+</script>
+</body>
+</html>
